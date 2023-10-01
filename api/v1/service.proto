@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package service_component;
+
+option go_package = "service-component/pb;pb";
+
+import "requests.proto";
+import "google/protobuf/empty.proto";
+
+service ServiceComponent {
+  rpc Get(GetRequest) returns(GetResponse) {}
+  rpc Set(SetRequest) returns(google.protobuf.Empty) {}
+}
