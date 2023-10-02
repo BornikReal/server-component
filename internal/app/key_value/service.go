@@ -3,8 +3,8 @@ package key_value
 import "fmt"
 
 type repository interface {
-	Get(key string) (string, error)
-	Set(key string, value string) error
+	get(key string) (string, error)
+	set(key string, value string) error
 }
 
 type KeyValueService struct {
@@ -18,7 +18,7 @@ func NewKeyValueService(repository repository) *KeyValueService {
 }
 
 func (r *KeyValueService) Get(key string) (string, error) {
-	value, err := r.rep.Get(key)
+	value, err := r.rep.get(key)
 	if err != nil {
 		return "", fmt.Errorf("KeyValueService.Get: %w", err)
 	}
@@ -26,7 +26,7 @@ func (r *KeyValueService) Get(key string) (string, error) {
 }
 
 func (r *KeyValueService) Set(key string, value string) error {
-	err := r.rep.Set(key, value)
+	err := r.rep.set(key, value)
 	if err != nil {
 		return fmt.Errorf("KeyValueService.Set: %w", err)
 	}
