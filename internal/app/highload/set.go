@@ -9,6 +9,10 @@ import (
 	desc "service-component/pkg/service-component/pb"
 )
 
-func (i *Implementation) Set(ctx context.Context, req *desc.SetRequest) (*emptypb.Empty, error) {
-	return &emptypb.Empty{}, status.Error(codes.Unimplemented, "unimplemented")
+func (i *Implementation) Set(_ context.Context, req *desc.SetRequest) (*emptypb.Empty, error) {
+	err := i.kvService.Set(req.Key, req.Value)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Get: %v", err)
+	}
+	return &emptypb.Empty{}, nil
 }
