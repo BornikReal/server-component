@@ -8,7 +8,7 @@ import "requests.proto";
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 
-service ServiceComponent {
+service HighloadService {
   rpc Get(GetRequest) returns(GetResponse) {
     option (google.api.http) = {
       get: "/kv"

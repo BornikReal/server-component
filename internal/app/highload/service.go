@@ -8,7 +8,7 @@ type KeyValueService interface {
 }
 
 type Implementation struct {
-	desc.UnimplementedServiceComponentServer
+	desc.UnsafeHighloadServiceServer
 
 	kvService KeyValueService
 }

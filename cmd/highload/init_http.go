@@ -1,26 +1,29 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
-	"service-component/internal/app/highload"
-	"service-component/internal/app/http_handlers"
+	"context"
+	"net/http"
+	"sync"
+
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"service-component/pkg/service-component/pb"
 )
 
-func initHttp(service *highload.Implementation) *mux.Router {
-	httpService := http_handlers.NewHttpService(service)
-	httpMux := mux.NewRouter()
-	//httpMux.StrictSlash(true)
+func initHttp(ctx context.Context, wg *sync.WaitGroup) {
+	wg.Add(1)
+	serveMux := runtime.NewServeMux()
+	opt := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	err := pb.RegisterHighloadServiceHandlerFromEndpoint(ctx, serveMux, ":7002", opt)
+	if err != nil {
+		panic(err)
+	}
 
-	httpMux.HandleFunc("/kv", httpService.Get).Methods("GET")
-	httpMux.HandleFunc("/kv", httpService.Set).Methods("POST")
-
-	// Настройка middleware для логирования и обработки ошибок panic.
-	//httpMux.Use(func(h http.Handler) http.Handler {
-	//	return handlers.LoggingHandler(os.Stdout, h)
-	//})
-	//httpMux.Use(handlers.RecoveryHandler(handlers.PrintRecoveryStack(true)))
-
-	//log.Fatal(http.ListenAndServe(os.Getenv("SERVERPORT"), httpMux))
-
-	return httpMux
+	go func() {
+		defer wg.Done()
+		if err = http.ListenAndServe(":7000", serveMux); err != nil {
+			panic(err)
+		}
+	}()
 }

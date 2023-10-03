@@ -19,122 +19,122 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// ServiceComponentClient is the client API for ServiceComponent service.
+// HighloadServiceClient is the client API for HighloadService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ServiceComponentClient interface {
+type HighloadServiceClient interface {
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	Set(ctx context.Context, in *SetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
-type serviceComponentClient struct {
+type highloadServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewServiceComponentClient(cc grpc.ClientConnInterface) ServiceComponentClient {
-	return &serviceComponentClient{cc}
+func NewHighloadServiceClient(cc grpc.ClientConnInterface) HighloadServiceClient {
+	return &highloadServiceClient{cc}
 }
 
-func (c *serviceComponentClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
+func (c *highloadServiceClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
 	out := new(GetResponse)
-	err := c.cc.Invoke(ctx, "/service_component.ServiceComponent/Get", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/service_component.HighloadService/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *serviceComponentClient) Set(ctx context.Context, in *SetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *highloadServiceClient) Set(ctx context.Context, in *SetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/service_component.ServiceComponent/Set", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/service_component.HighloadService/Set", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// ServiceComponentServer is the server API for ServiceComponent service.
-// All implementations must embed UnimplementedServiceComponentServer
+// HighloadServiceServer is the server API for HighloadService service.
+// All implementations must embed UnimplementedHighloadServiceServer
 // for forward compatibility
-type ServiceComponentServer interface {
+type HighloadServiceServer interface {
 	Get(context.Context, *GetRequest) (*GetResponse, error)
 	Set(context.Context, *SetRequest) (*emptypb.Empty, error)
-	mustEmbedUnimplementedServiceComponentServer()
+	mustEmbedUnimplementedHighloadServiceServer()
 }
 
-// UnimplementedServiceComponentServer must be embedded to have forward compatible implementations.
-type UnimplementedServiceComponentServer struct {
+// UnimplementedHighloadServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedHighloadServiceServer struct {
 }
 
-func (UnimplementedServiceComponentServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
+func (UnimplementedHighloadServiceServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedServiceComponentServer) Set(context.Context, *SetRequest) (*emptypb.Empty, error) {
+func (UnimplementedHighloadServiceServer) Set(context.Context, *SetRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Set not implemented")
 }
-func (UnimplementedServiceComponentServer) mustEmbedUnimplementedServiceComponentServer() {}
+func (UnimplementedHighloadServiceServer) mustEmbedUnimplementedHighloadServiceServer() {}
 
-// UnsafeServiceComponentServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ServiceComponentServer will
+// UnsafeHighloadServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to HighloadServiceServer will
 // result in compilation errors.
-type UnsafeServiceComponentServer interface {
-	mustEmbedUnimplementedServiceComponentServer()
+type UnsafeHighloadServiceServer interface {
+	mustEmbedUnimplementedHighloadServiceServer()
 }
 
-func RegisterServiceComponentServer(s grpc.ServiceRegistrar, srv ServiceComponentServer) {
-	s.RegisterService(&ServiceComponent_ServiceDesc, srv)
+func RegisterHighloadServiceServer(s grpc.ServiceRegistrar, srv HighloadServiceServer) {
+	s.RegisterService(&HighloadService_ServiceDesc, srv)
 }
 
-func _ServiceComponent_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _HighloadService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ServiceComponentServer).Get(ctx, in)
+		return srv.(HighloadServiceServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/service_component.ServiceComponent/Get",
+		FullMethod: "/service_component.HighloadService/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceComponentServer).Get(ctx, req.(*GetRequest))
+		return srv.(HighloadServiceServer).Get(ctx, req.(*GetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ServiceComponent_Set_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _HighloadService_Set_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ServiceComponentServer).Set(ctx, in)
+		return srv.(HighloadServiceServer).Set(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/service_component.ServiceComponent/Set",
+		FullMethod: "/service_component.HighloadService/Set",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceComponentServer).Set(ctx, req.(*SetRequest))
+		return srv.(HighloadServiceServer).Set(ctx, req.(*SetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// ServiceComponent_ServiceDesc is the grpc.ServiceDesc for ServiceComponent service.
+// HighloadService_ServiceDesc is the grpc.ServiceDesc for HighloadService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var ServiceComponent_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "service_component.ServiceComponent",
-	HandlerType: (*ServiceComponentServer)(nil),
+var HighloadService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "service_component.HighloadService",
+	HandlerType: (*HighloadServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Get",
-			Handler:    _ServiceComponent_Get_Handler,
+			Handler:    _HighloadService_Get_Handler,
 		},
 		{
 			MethodName: "Set",
-			Handler:    _ServiceComponent_Set_Handler,
+			Handler:    _HighloadService_Set_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

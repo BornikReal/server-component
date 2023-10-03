@@ -6,7 +6,7 @@
   },
   "tags": [
     {
-      "name": "ServiceComponent"
+      "name": "HighloadService"
     }
   ],
   "consumes": [
@@ -18,7 +18,7 @@
   "paths": {
     "/kv": {
       "get": {
-        "operationId": "ServiceComponent_Get",
+        "operationId": "HighloadService_Get",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -35,18 +35,18 @@
         },
         "parameters": [
           {
-            "name": "Key",
+            "name": "key",
             "in": "query",
             "required": false,
             "type": "string"
           }
         ],
         "tags": [
-          "ServiceComponent"
+          "HighloadService"
         ]
       },
       "post": {
-        "operationId": "ServiceComponent_Set",
+        "operationId": "HighloadService_Set",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -77,7 +77,7 @@
           }
         ],
         "tags": [
-          "ServiceComponent"
+          "HighloadService"
         ]
       }
     }

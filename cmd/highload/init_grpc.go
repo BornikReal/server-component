@@ -1,21 +1,28 @@
 package main
 
 import (
-	"google.golang.org/grpc/reflection"
 	"net"
+	"sync"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"service-component/internal/app/highload"
 	"service-component/pkg/service-component/pb"
 )
 
-func initGrpc(service *highload.Implementation) (*grpc.Server, net.Listener) {
+func initGrpc(wg *sync.WaitGroup, service *highload.Implementation) {
+	wg.Add(1)
 	grpcServer := grpc.NewServer()
-	pb.RegisterServiceComponentServer(grpcServer, service)
+	pb.RegisterHighloadServiceServer(grpcServer, service)
 	reflection.Register(grpcServer)
 	lsn, err := net.Listen("tcp", ":7002")
 	if err != nil {
 		panic(err)
 	}
-	return grpcServer, lsn
+	go func() {
+		defer wg.Done()
+		if err = grpcServer.Serve(lsn); err != nil {
+			panic(err)
+		}
+	}()
 }
