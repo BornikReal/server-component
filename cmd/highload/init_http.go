@@ -6,24 +6,29 @@ import (
 	"sync"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"service-component/internal/app/infrastructure/logger"
 	"service-component/pkg/service-component/pb"
 )
 
 func initHttp(ctx context.Context, wg *sync.WaitGroup) {
+	logger.Info("init http server")
 	wg.Add(1)
 	serveMux := runtime.NewServeMux()
 	opt := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 	err := pb.RegisterHighloadServiceHandlerFromEndpoint(ctx, serveMux, grpcPort, opt)
 	if err != nil {
-		panic(err)
+		logger.Fatal("can't create http server from grpc endpoint",
+			zap.String("error", err.Error()))
 	}
 
 	go func() {
 		defer wg.Done()
 		if err = http.ListenAndServe(httpPort, serveMux); err != nil {
-			panic(err)
+			logger.Fatal("starting http server ended with error",
+				zap.String("error", err.Error()), zap.String("port", httpPort))
 		}
 	}()
 }
