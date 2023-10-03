@@ -6,8 +6,17 @@ option go_package = "service-component/pb;pb";
 
 import "requests.proto";
 import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
 
 service ServiceComponent {
-  rpc Get(GetRequest) returns(GetResponse) {}
-  rpc Set(SetRequest) returns(google.protobuf.Empty) {}
+  rpc Get(GetRequest) returns(GetResponse) {
+    option (google.api.http) = {
+      get: "/kv"
+    };
+  }
+  rpc Set(SetRequest) returns(google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/kv"
+    };
+  }
 }

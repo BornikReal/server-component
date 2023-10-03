@@ -1,0 +1,4 @@
+version: v1
+name: github.com/BornikReal/server-component
+deps:
+  - google/api/annotations.proto
