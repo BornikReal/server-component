@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/BornikReal/storage-component/pkg/storage"
 	"net/http"
-	"os"
 	"service-component/internal/app/highload"
 	"service-component/internal/app/http_handlers"
 	"service-component/internal/app/key_value"
@@ -16,7 +15,8 @@ func main() {
 	grpcService := highload.NewImplementation(kvService)
 	httpService := http_handlers.NewHttpService(grpcService)
 	httpMux := initHttp(httpService)
-	err := http.ListenAndServe(os.Getenv("SERVERPORT"), httpMux)
+	//err := http.ListenAndServe(os.Getenv("SERVERPORT"), httpMux)
+	err := http.ListenAndServe(":7000", httpMux)
 	if err != nil {
 		panic(err)
 	}

@@ -18,6 +18,7 @@ func (h *HttpService) Get(w http.ResponseWriter, req *http.Request) {
 		processGrpcError(w, err)
 		return
 	}
+
 	_, err = w.Write([]byte(resp.Value))
 	if err != nil {
 		http.Error(w, "error while writing", http.StatusInternalServerError)

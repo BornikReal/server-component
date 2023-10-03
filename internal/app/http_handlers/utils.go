@@ -19,8 +19,8 @@ func takeSingleFromQuery(w http.ResponseWriter, req *http.Request, key string) *
 		http.Error(w, fmt.Sprintf("argument %s not found", key), http.StatusBadRequest)
 		return nil
 	}
-	if len(key) != 1 {
-		http.Error(w, fmt.Sprintf("too many values in argument %s"), http.StatusBadRequest)
+	if len(value) != 1 {
+		http.Error(w, fmt.Sprintf("too many values(%v) in argument %s", value, key), http.StatusBadRequest)
 		return nil
 	}
 	return &value[0]

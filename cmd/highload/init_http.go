@@ -10,7 +10,7 @@ func initHttp(server *http_handlers.HttpService) *mux.Router {
 	//httpMux.StrictSlash(true)
 
 	httpMux.HandleFunc("/kv", server.Get).Methods("GET")
-	httpMux.HandleFunc("/task", server.Set).Methods("SET")
+	httpMux.HandleFunc("/kv", server.Set).Methods("POST")
 
 	// Настройка middleware для логирования и обработки ошибок panic.
 	//httpMux.Use(func(h http.Handler) http.Handler {
