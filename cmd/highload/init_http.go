@@ -15,14 +15,14 @@ func initHttp(ctx context.Context, wg *sync.WaitGroup) {
 	wg.Add(1)
 	serveMux := runtime.NewServeMux()
 	opt := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	err := pb.RegisterHighloadServiceHandlerFromEndpoint(ctx, serveMux, ":7002", opt)
+	err := pb.RegisterHighloadServiceHandlerFromEndpoint(ctx, serveMux, grpcPort, opt)
 	if err != nil {
 		panic(err)
 	}
 
 	go func() {
 		defer wg.Done()
-		if err = http.ListenAndServe(":7000", serveMux); err != nil {
+		if err = http.ListenAndServe(httpPort, serveMux); err != nil {
 			panic(err)
 		}
 	}()

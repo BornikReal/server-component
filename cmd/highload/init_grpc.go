@@ -15,7 +15,7 @@ func initGrpc(wg *sync.WaitGroup, service *highload.Implementation) {
 	grpcServer := grpc.NewServer()
 	pb.RegisterHighloadServiceServer(grpcServer, service)
 	reflection.Register(grpcServer)
-	lsn, err := net.Listen("tcp", ":7002")
+	lsn, err := net.Listen("tcp", grpcPort)
 	if err != nil {
 		panic(err)
 	}
