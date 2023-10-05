@@ -1,4 +1,4 @@
-module service-component
+module github.com/BornikReal/service-component
 
 go 1.19
 
