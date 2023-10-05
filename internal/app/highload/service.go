@@ -1,6 +1,6 @@
 package highload
 
-import desc "service-component/pkg/service-component/pb"
+import desc "github.com/BornikReal/server-component/pkg/service-component/pb"
 
 type KeyValueService interface {
 	Get(key string) (string, error)

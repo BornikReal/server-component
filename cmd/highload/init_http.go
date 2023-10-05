@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/BornikReal/server-component/internal/app/infrastructure/logger"
+	"github.com/BornikReal/server-component/pkg/service-component/pb"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"service-component/internal/app/infrastructure/logger"
-	"service-component/pkg/service-component/pb"
 )
 
 func initHttp(ctx context.Context, wg *sync.WaitGroup) {

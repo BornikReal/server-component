@@ -3,13 +3,13 @@ package highload
 import (
 	"context"
 	"errors"
-	"go.uber.org/zap"
-	"service-component/internal/app/infrastructure/logger"
 
+	"github.com/BornikReal/server-component/internal/app/infrastructure/logger"
+	desc "github.com/BornikReal/server-component/pkg/service-component/pb"
 	"github.com/BornikReal/storage-component/pkg/storage"
+	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	desc "service-component/pkg/service-component/pb"
 )
 
 func (i *Implementation) Get(_ context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {

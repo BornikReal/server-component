@@ -4,12 +4,12 @@ import (
 	"net"
 	"sync"
 
+	"github.com/BornikReal/server-component/internal/app/highload"
+	"github.com/BornikReal/server-component/internal/app/infrastructure/logger"
+	"github.com/BornikReal/server-component/pkg/service-component/pb"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"service-component/internal/app/highload"
-	"service-component/internal/app/infrastructure/logger"
-	"service-component/pkg/service-component/pb"
 )
 
 func initGrpc(wg *sync.WaitGroup, service *highload.Implementation) {

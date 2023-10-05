@@ -3,12 +3,12 @@ package highload
 import (
 	"context"
 	"go.uber.org/zap"
-	"service-component/internal/app/infrastructure/logger"
 
+	"github.com/BornikReal/server-component/internal/app/infrastructure/logger"
+	desc "github.com/BornikReal/server-component/pkg/service-component/pb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
-	desc "service-component/pkg/service-component/pb"
 )
 
 func (i *Implementation) Set(_ context.Context, req *desc.SetRequest) (*emptypb.Empty, error) {
