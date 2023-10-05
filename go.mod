@@ -1,4 +1,4 @@
-module github.com/BornikReal/service-component
+module github.com/BornikReal/server-component
 
 go 1.19
 
