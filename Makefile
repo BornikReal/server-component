@@ -12,3 +12,15 @@ generate:
 .PHONY: build
 build:
 	mkdir -p bin && cd cmd/highload && go build -o ../../bin/client
+
+.PHONY: up
+up:
+	docker-compose build && docker-compose up -d
+
+.PHONY: down
+down:
+	docker-compose down
+
+.PHONY: show_logs
+show_logs:
+	docker exec -it server cat server.log
