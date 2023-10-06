@@ -8,3 +8,7 @@ generate:
 	--openapiv2_out pkg \
 	--grpc-gateway_opt generate_unbound_methods=true \
 	api/v1/*.proto
+
+.PHONY: build
+build:
+	mkdir -p bin && cd cmd/highload && go build -o ../../bin/client
