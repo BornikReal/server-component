@@ -2,7 +2,9 @@ version: "3"
 
 services:
   server:
-    build: docker
+    build:
+      context: ./
+      dockerfile: ./build/Dockerfile
     container_name: server
     environment:
       SERVICE_PORT_HTTP: 8001
