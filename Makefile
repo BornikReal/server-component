@@ -11,7 +11,7 @@ generate:
 
 .PHONY: build
 build:
-	mkdir -p bin && cd cmd/highload && go build -o ../../bin/client
+	mkdir -p bin && cd cmd/highload && go build -o ../../bin/server
 
 .PHONY: up
 up:

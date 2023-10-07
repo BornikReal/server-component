@@ -4,6 +4,6 @@ WORKDIR /app
 
 COPY ../. .
 
-RUN mkdir -p bin && cd cmd/highload && go build -o ../../bin/client
+RUN mkdir -p bin && cd cmd/highload && go build -o ../../bin/server
 
-CMD ./bin/client
+CMD ./bin/server
