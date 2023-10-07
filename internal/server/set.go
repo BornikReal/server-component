@@ -1,10 +1,10 @@
-package highload
+package server
 
 import (
 	"context"
 	"go.uber.org/zap"
 
-	"github.com/BornikReal/server-component/internal/app/infrastructure/logger"
+	"github.com/BornikReal/server-component/internal/infrastructure/logger"
 	desc "github.com/BornikReal/server-component/pkg/service-component/pb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

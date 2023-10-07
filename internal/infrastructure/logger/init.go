@@ -1,4 +1,4 @@
-package main
+package logger
 
 import (
 	"os"
@@ -7,10 +7,10 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func initLogger() {
+func InitLogger() {
 	cfg := zap.NewProductionEncoderConfig()
 
-	f, err := os.OpenFile("server.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	f, err := os.OpenFile("storage_service.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		panic(err)
 	}

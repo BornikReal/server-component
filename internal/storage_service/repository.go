@@ -1,4 +1,4 @@
-package key_value
+package storage_service
 
 import (
 	"fmt"

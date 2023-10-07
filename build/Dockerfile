@@ -4,6 +4,6 @@ WORKDIR /app
 
 COPY ../. .
 
-RUN mkdir -p bin && cd cmd/highload && go build -o ../../bin/server
+RUN mkdir -p bin && cd cmd/server && go build -o ../../bin/storage_service
 
 CMD ./bin/server

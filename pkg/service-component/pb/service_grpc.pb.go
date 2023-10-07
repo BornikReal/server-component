@@ -53,7 +53,7 @@ func (c *highloadServiceClient) Set(ctx context.Context, in *SetRequest, opts ..
 	return out, nil
 }
 
-// HighloadServiceServer is the server API for HighloadService service.
+// HighloadServiceServer is the storage_service API for HighloadService service.
 // All implementations must embed UnimplementedHighloadServiceServer
 // for forward compatibility
 type HighloadServiceServer interface {
