@@ -3,8 +3,8 @@ package server
 import (
 	"context"
 	"errors"
+	"github.com/BornikReal/server-component/pkg/logger"
 
-	"github.com/BornikReal/server-component/internal/infrastructure/logger"
 	desc "github.com/BornikReal/server-component/pkg/service-component/pb"
 	"github.com/BornikReal/storage-component/pkg/storage"
 	"go.uber.org/zap"

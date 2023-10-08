@@ -11,7 +11,7 @@ generate:
 
 .PHONY: build
 build:
-	mkdir -p bin && cd cmd/highload && go build -o ../../bin/server
+	mkdir -p bin && cd cmd && go build -o ../bin/storage_service
 
 .PHONY: up
 up:
@@ -23,4 +23,4 @@ down:
 
 .PHONY: show_logs
 show_logs:
-	docker exec -it server cat server.log
+	docker exec -it storage_service cat server.log

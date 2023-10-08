@@ -15,7 +15,7 @@ func New() *Config {
 	return &Config{}
 }
 
-func (c *Config) Init() error {
+func (c *Config) LoadFromEnv() error {
 	httpPort := os.Getenv("SERVICE_PORT_HTTP")
 	if httpPort == "" {
 		return errors.New("SERVICE_PORT_HTTP is empty")

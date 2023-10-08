@@ -2,9 +2,9 @@ package server
 
 import (
 	"context"
+	"github.com/BornikReal/server-component/pkg/logger"
 	"go.uber.org/zap"
 
-	"github.com/BornikReal/server-component/internal/infrastructure/logger"
 	desc "github.com/BornikReal/server-component/pkg/service-component/pb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

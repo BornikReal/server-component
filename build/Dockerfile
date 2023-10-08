@@ -2,8 +2,8 @@ FROM golang:1.19
 
 WORKDIR /app
 
-COPY ../. .
+COPY . .
 
-RUN mkdir -p bin && cd cmd/server && go build -o ../../bin/storage_service
+RUN mkdir -p bin && cd cmd && go build -o ../bin/storage_service
 
-CMD ./bin/server
+CMD ./bin/storage_service

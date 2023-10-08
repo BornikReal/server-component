@@ -2,7 +2,7 @@ package server
 
 import desc "github.com/BornikReal/server-component/pkg/service-component/pb"
 
-type StorageService interface {
+type StorageService interface { //Storage
 	Get(key string) (string, error)
 	Set(key string, value string) error
 }
