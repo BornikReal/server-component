@@ -2,26 +2,21 @@ package internal
 
 import (
 	"context"
-	"github.com/BornikReal/storage-component/pkg/kv_file"
-	"github.com/go-co-op/gocron"
-	"net"
-	"net/http"
-	"sync"
-	"time"
-
 	"github.com/BornikReal/server-component/internal/config"
 	"github.com/BornikReal/server-component/internal/server"
 	"github.com/BornikReal/server-component/internal/storage_service/inmemory"
 	"github.com/BornikReal/server-component/pkg/logger"
 	"github.com/BornikReal/server-component/pkg/service-component/pb"
-	"github.com/BornikReal/storage-component/pkg/ss_manager"
 	"github.com/BornikReal/storage-component/pkg/storage"
-	"github.com/emirpasic/gods/trees/avltree"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
+	"net"
+	"net/http"
+	"sync"
 )
 
 type serve func() error
@@ -50,23 +45,37 @@ func (app *App) Init() error {
 		return err
 	}
 
-	ssManager := ss_manager.NewSSManager(conf.GetSSDirectory(), conf.GetBlockSize(), conf.GetBatch())
-	if err := ssManager.Init(); err != nil {
-		panic(err)
-	}
-	tree := avltree.NewWithStringComparator()
-	wal := kv_file.NewKVFile(conf.GetWalPath(), conf.GetWalName())
-	if err := wal.Init(); err != nil {
-		panic(err)
-	}
-	mt := storage.NewMemTable(tree, ssManager, wal, conf.GetMaxTreeSize())
+	rdbMaster := redis.NewClient(&redis.Options{
+		Addr: "172.28.1.4:6380",
+	})
 
-	s := gocron.NewScheduler(time.UTC)
-	_, err := s.Cron(conf.GetCompressCronJob()).Do(ssManager.CompressSS)
-	if err != nil {
-		panic(err)
-	}
-	s.StartAsync()
+	rdbSlave1 := redis.NewClient(&redis.Options{
+		Addr: "172.28.1.5:6381",
+	})
+
+	rdbSlave2 := redis.NewClient(&redis.Options{
+		Addr: "172.28.1.6:6382",
+	})
+
+	mt := storage.NewRedisStorage(rdbMaster, []storage.RedisClient{rdbSlave1, rdbSlave2})
+
+	//ssManager := ss_manager.NewSSManager(conf.GetSSDirectory(), conf.GetBlockSize(), conf.GetBatch())
+	//if err := ssManager.Init(); err != nil {
+	//	panic(err)
+	//}
+	//tree := avltree.NewWithStringComparator()
+	//wal := kv_file.NewKVFile(conf.GetWalPath(), conf.GetWalName())
+	//if err := wal.Init(); err != nil {
+	//	panic(err)
+	//}
+	//mt := storage.NewMemTable(tree, ssManager, wal, conf.GetMaxTreeSize())
+	//
+	//s := gocron.NewScheduler(time.UTC)
+	//_, err := s.Cron(conf.GetCompressCronJob()).Do(ssManager.CompressSS)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//s.StartAsync()
 
 	storageService := inmemory.NewStorageService(mt)
 	impl := server.NewImplementation(storageService)
