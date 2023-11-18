@@ -12,6 +12,9 @@ type Config struct {
 	grpcPort string
 
 	ssDirectory string
+	walPath     string
+	walName     string
+
 	maxTreeSize int
 	blockSize   int64
 	batch       int64
@@ -96,6 +99,18 @@ func (c *Config) LoadFromEnv() error {
 		}
 	}
 
+	c.walPath = os.Getenv("WAL_PATH")
+	if c.walPath == "" {
+		c.walPath = ""
+		logUseDefault("WAL_PATH", c.walPath)
+	}
+
+	c.walName = os.Getenv("WAL_NAME")
+	if c.walName == "" {
+		c.walName = ""
+		logUseDefault("WAL_NAME", c.walName)
+	}
+
 	return nil
 }
 
@@ -109,6 +124,14 @@ func (c *Config) GetGrpcPort() string {
 
 func (c *Config) GetSSDirectory() string {
 	return c.ssDirectory
+}
+
+func (c *Config) GetWalPath() string {
+	return c.walPath
+}
+
+func (c *Config) GetWalName() string {
+	return c.walName
 }
 
 func (c *Config) GetCompressCronJob() string {

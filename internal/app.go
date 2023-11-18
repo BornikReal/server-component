@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"github.com/BornikReal/storage-component/pkg/kv_file"
 	"github.com/go-co-op/gocron"
 	"net"
 	"net/http"
@@ -54,7 +55,11 @@ func (app *App) Init() error {
 		panic(err)
 	}
 	tree := avltree.NewWithStringComparator()
-	mt := storage.NewMemTable(tree, ssManager, conf.GetMaxTreeSize())
+	wal := kv_file.NewKVFile(conf.GetWalPath(), conf.GetWalName())
+	if err := wal.Init(); err != nil {
+		panic(err)
+	}
+	mt := storage.NewMemTable(tree, ssManager, wal, conf.GetMaxTreeSize())
 
 	s := gocron.NewScheduler(time.UTC)
 	_, err := s.Cron(conf.GetCompressCronJob()).Do(ssManager.CompressSS)
