@@ -12,6 +12,8 @@ services:
     ports:
       - "8001:8001"
       - "8002:8002"
+    networks:
+      hl-lab3-network:
 
   redis-master:
     image: redis:7.2.2
@@ -25,16 +27,29 @@ services:
       hl-lab3-network:
           ipv4_address: 172.28.1.4
 
-#  redis-slave:
-#    image: redis:7.2.2
-#    container_name: slave
-#    ports:
-#      - "6381:6380"
-#    command: redis-server --slaveof master 6379
-#    depends_on:
-#      - redis-master
-#    networks:
-#      - hl-lab3-network
+  redis-slave-1:
+    image: redis:7.2.2
+    container_name: slave-1
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/slave1/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "6381:6381"
+    networks:
+      hl-lab3-network:
+        ipv4_address: 172.28.1.5
+
+  redis-slave-2:
+    image: redis:7.2.2
+    container_name: slave-2
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/slave2/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "6382:6382"
+    networks:
+      hl-lab3-network:
+        ipv4_address: 172.28.1.6
 
 networks:
   hl-lab3-network:
