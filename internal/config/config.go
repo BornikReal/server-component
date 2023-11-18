@@ -18,6 +18,7 @@ type Config struct {
 	maxTreeSize int
 	blockSize   int64
 	batch       int64
+	ssChanSize  int64
 
 	compressCronJob string
 }
@@ -111,6 +112,20 @@ func (c *Config) LoadFromEnv() error {
 		logUseDefault("WAL_NAME", c.walName)
 	}
 
+	value = os.Getenv("SS_CHAN_SIZE")
+	if value == "" {
+		c.ssChanSize = 5
+		logUseDefault("SS_CHAN_SIZE", c.ssChanSize)
+	} else {
+		valueInt, err := strconv.ParseInt(value, 10, 64)
+		if err != nil {
+			c.ssChanSize = 5
+			logUseDefault("SS_CHAN_SIZE", c.ssChanSize)
+		} else {
+			c.ssChanSize = valueInt
+		}
+	}
+
 	return nil
 }
 
@@ -148,4 +163,8 @@ func (c *Config) GetBlockSize() int64 {
 
 func (c *Config) GetBatch() int64 {
 	return c.batch
+}
+
+func (c *Config) SSChanSize() int64 {
+	return c.ssChanSize
 }

@@ -3,7 +3,7 @@ module github.com/BornikReal/server-component
 go 1.19
 
 require (
-	github.com/BornikReal/storage-component v1.19.0
+	github.com/BornikReal/storage-component v1.19.3
 	github.com/emirpasic/gods v1.18.1
 	github.com/go-co-op/gocron v1.35.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.2
