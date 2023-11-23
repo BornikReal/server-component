@@ -12,3 +12,48 @@ services:
     ports:
       - "8001:8001"
       - "8002:8002"
+    networks:
+      hl-lab3-network:
+
+  redis-master:
+    image: redis:7.2.2
+    container_name: master
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/master/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "6380:6380"
+    networks:
+      hl-lab3-network:
+          ipv4_address: 172.28.1.4
+
+  redis-slave-1:
+    image: redis:7.2.2
+    container_name: slave-1
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/slave1/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "6381:6381"
+    networks:
+      hl-lab3-network:
+        ipv4_address: 172.28.1.5
+
+  redis-slave-2:
+    image: redis:7.2.2
+    container_name: slave-2
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/slave2/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "6382:6382"
+    networks:
+      hl-lab3-network:
+        ipv4_address: 172.28.1.6
+
+networks:
+  hl-lab3-network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
