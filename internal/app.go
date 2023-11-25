@@ -7,7 +7,13 @@ import (
 	"github.com/BornikReal/server-component/internal/storage_service/inmemory"
 	"github.com/BornikReal/server-component/pkg/logger"
 	"github.com/BornikReal/server-component/pkg/service-component/pb"
+	"github.com/BornikReal/storage-component/pkg/ss_storage/iterator"
+	"github.com/BornikReal/storage-component/pkg/ss_storage/kv_file"
+	"github.com/BornikReal/storage-component/pkg/ss_storage/ss_manager"
 	"github.com/BornikReal/storage-component/pkg/storage"
+	"github.com/BornikReal/storage-component/pkg/tree_with_clone"
+	"github.com/emirpasic/gods/trees/avltree"
+	"github.com/go-co-op/gocron"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
@@ -16,7 +22,9 @@ import (
 	"google.golang.org/grpc/reflection"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
+	"time"
 )
 
 type serve func() error
@@ -45,63 +53,18 @@ func (app *App) Init() error {
 		return err
 	}
 
-	rdbMaster := redis.NewClient(&redis.Options{
-		Addr:     conf.GetMasterHost(),
-		Password: conf.GetMasterRedisPassword(),
-	})
+	var mt inmemory.Storage
+	switch conf.GetStorageType() {
+	case config.LSMStorage:
+		mt = initLSMStorage(conf)
+	case config.RedisClusterStorage:
+		mt = initRedisCluster(conf)
+	}
 
-	rdbSlave1 := redis.NewClient(&redis.Options{
-		Addr:     conf.GetSlave1RedisHost(),
-		Password: conf.GetSlave1RedisPassword(),
-	})
-
-	rdbSlave2 := redis.NewClient(&redis.Options{
-		Addr:     conf.GetSlave2RedisHost(),
-		Password: conf.GetSlave2RedisPassword(),
-	})
-
-	mt := storage.NewRedisStorage(rdbMaster, []storage.RedisClient{rdbSlave1, rdbSlave2})
-
-	//ssManager := ss_manager.NewSSManager(conf.GetSSDirectory(), conf.GetBlockSize(), conf.GetBatch())
-	//if err := ssManager.Init(); err != nil {
-	//	panic(err)
-	//}
-	//tree := avltree.NewWithStringComparator()
-	//wal := kv_file.NewKVFile(conf.GetWalPath(), conf.GetWalName())
-	//if err := wal.Init(); err != nil {
-	//	panic(err)
-	//}
-	//
-	//dumper := make(chan iterator.Iterator, conf.SSChanSize())
-	//mt := storage.NewMemTableWithWal(
-	//	storage.NewMemTableWithSS(
-	//		storage.NewMemTable(
-	//			tree_with_clone.NewTreeWithClone(
-	//				tree,
-	//			),
-	//			dumper,
-	//			conf.GetMaxTreeSize(),
-	//		),
-	//		ssManager,
-	//	),
-	//	wal,
-	//)
-	//
-	//errorCh := make(chan error, 1)
-	//ssProcessor := storage.NewSSProcessor(ssManager, errorCh)
-	//go ssProcessor.Start(dumper)
-	//go func() {
-	//	for err := range errorCh {
-	//		logger.Error("SS processor encounters with error while saving tree", zap.String("error", err.Error()))
-	//	}
-	//}()
-	//
-	//s := gocron.NewScheduler(time.UTC)
-	//_, err := s.Cron(conf.GetCompressCronJob()).Do(ssManager.CompressSS)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//s.StartAsync()
+	if mt == nil {
+		logger.Fatalf("storage not init",
+			zap.String("storage_type", string(conf.GetStorageType())))
+	}
 
 	storageService := inmemory.NewStorageService(mt)
 	impl := server.NewImplementation(storageService)
@@ -169,4 +132,77 @@ func (app *App) initHttp(ctx context.Context) {
 	app.startHttp = func() error {
 		return http.ListenAndServe(app.config.GetHttpPort(), serveMux)
 	}
+}
+
+func initLSMStorage(conf *config.Config) inmemory.Storage {
+	ssManager := ss_manager.NewSSManager(conf.GetSSDirectory(), conf.GetBlockSize(), conf.GetBatch())
+	if err := ssManager.Init(); err != nil {
+		panic(err)
+	}
+	tree := avltree.NewWithStringComparator()
+	wal := kv_file.NewKVFile(conf.GetWalPath(), conf.GetWalName())
+	if err := wal.Init(); err != nil {
+		panic(err)
+	}
+
+	dumper := make(chan iterator.Iterator, conf.SSChanSize())
+	mt := storage.NewMemTableWithWal(
+		storage.NewMemTableWithSS(
+			storage.NewMemTable(
+				tree_with_clone.NewTreeWithClone(
+					tree,
+				),
+				dumper,
+				conf.GetMaxTreeSize(),
+			),
+			ssManager,
+		),
+		wal,
+	)
+
+	errorCh := make(chan error, 1)
+	ssProcessor := storage.NewSSProcessor(ssManager, errorCh)
+	go ssProcessor.Start(dumper)
+	go func() {
+		for err := range errorCh {
+			logger.Error("SS processor encounters with error while saving tree", zap.String("error", err.Error()))
+		}
+	}()
+
+	s := gocron.NewScheduler(time.UTC)
+	_, err := s.Cron(conf.GetCompressCronJob()).Do(ssManager.CompressSS)
+	if err != nil {
+		panic(err)
+	}
+	s.StartAsync()
+
+	return mt
+}
+
+func initRedisReplication(conf *config.Config) inmemory.Storage {
+	rdbMaster := redis.NewClient(&redis.Options{
+		Addr:     conf.GetMasterHost(),
+		Password: conf.GetMasterRedisPassword(),
+	})
+
+	rdbSlave1 := redis.NewClient(&redis.Options{
+		Addr:     conf.GetSlave1RedisHost(),
+		Password: conf.GetSlave1RedisPassword(),
+	})
+
+	rdbSlave2 := redis.NewClient(&redis.Options{
+		Addr:     conf.GetSlave2RedisHost(),
+		Password: conf.GetSlave2RedisPassword(),
+	})
+
+	return storage.NewRedisStorage(rdbMaster, []storage.RedisClient{rdbSlave1, rdbSlave2})
+}
+
+func initRedisCluster(conf *config.Config) inmemory.Storage {
+	rdb := redis.NewClusterClient(&redis.ClusterOptions{
+		Addrs:    strings.Split(conf.GetClusterRedisHosts(), ","),
+		Password: conf.GetClusterRedisPassword(),
+	})
+
+	return storage.NewRedisStorage(rdb, nil)
 }

@@ -7,6 +7,18 @@ import (
 	"strconv"
 )
 
+type StorageType uint8
+
+const (
+	LSMStorage          = 0
+	RedisClusterStorage = 1
+)
+
+var storageTypeConv = map[string]StorageType{
+	"lsm":           LSMStorage,
+	"redis_cluster": RedisClusterStorage,
+}
+
 type Config struct {
 	httpPort string
 	grpcPort string
@@ -30,6 +42,11 @@ type Config struct {
 
 	slave2RedisHost     string
 	slave2RedisPassword string
+
+	storageType StorageType
+
+	clusterRedisHosts    string
+	clusterRedisPassword string
 }
 
 func New() *Config {
@@ -171,6 +188,31 @@ func (c *Config) LoadFromEnv() error {
 		logUseDefault("SLAVE2_REDIS_PASSWORD", c.slave2RedisPassword)
 	}
 
+	storageType := os.Getenv("STORAGE_TYPE")
+	if storageType == "" {
+		c.storageType = LSMStorage
+		logUseDefault("STORAGE_TYPE", c.storageType)
+	} else {
+		var ok bool
+		c.storageType, ok = storageTypeConv[storageType]
+		if !ok {
+			c.storageType = LSMStorage
+			logger.Infof("Unknown storage type - %s, using default storage type - lsm", storageType)
+		}
+	}
+
+	c.clusterRedisHosts = os.Getenv("CLUSTER_REDIS_HOSTS")
+	if c.clusterRedisHosts == "" {
+		c.clusterRedisHosts = "172.28.1.10:7000,172.28.1.11:7001,172.28.1.12:7002,172.28.1.13:7003,172.28.1.14:7004,172.28.1.15:7005"
+		logUseDefault("CLUSTER_REDIS_HOSTS", c.clusterRedisHosts)
+	}
+
+	c.clusterRedisPassword = os.Getenv("CLUSTER_REDIS_PASSWORD")
+	if c.clusterRedisPassword == "" {
+		c.clusterRedisPassword = "1234"
+		logUseDefault("CLUSTER_REDIS_PASSWORD", c.clusterRedisPassword)
+	}
+
 	return nil
 }
 
@@ -236,4 +278,16 @@ func (c *Config) GetSlave2RedisHost() string {
 
 func (c *Config) GetSlave2RedisPassword() string {
 	return c.slave2RedisPassword
+}
+
+func (c *Config) GetStorageType() StorageType {
+	return c.storageType
+}
+
+func (c *Config) GetClusterRedisHosts() string {
+	return c.clusterRedisHosts
+}
+
+func (c *Config) GetClusterRedisPassword() string {
+	return c.clusterRedisPassword
 }
